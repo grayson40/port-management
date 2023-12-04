@@ -69,10 +69,10 @@ This README outlines the steps to set up a development server for the Port Manag
 
 ## Step 2: Setting Up Your Node.js Application
 
-1. Install Dependencies: Install Express and MySQL Node.js client:
+1. Install Dependencies:
 
     ```
-    npm install express mysql body-parser
+    npm install
     ```
 
 2. Set Up Express and MySQL Connection:
@@ -95,5 +95,6 @@ This README outlines the steps to set up a development server for the Port Manag
 Run your server using the following command:
 
 ```
+cd server
 node app.js
 ```
