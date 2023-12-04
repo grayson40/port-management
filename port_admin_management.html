@@ -87,7 +87,16 @@
                         const row = document.createElement('tr');
                         for (let key in item) {
                             const td = document.createElement('td');
-                            td.textContent = item[key];
+                            if (key === 'enteredPort' || key === 'exitedPort') {
+                                // Check if the date is not null
+                                if (item[key] !== null) {
+                                    // Format the date
+                                    const date = new Date(item[key]);
+                                    td.textContent = date.toLocaleString();
+                                }
+                            } else {
+                                td.textContent = item[key];
+                            }
                             row.appendChild(td);
                         }
                         table.appendChild(row);
