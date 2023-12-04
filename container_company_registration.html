@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Container Company Registration</title>
     <!-- You can add CSS and JavaScript links here -->
 </head>
+
 <body>
     <h1>Container Company Registration Form</h1>
-    <form action="/submit-container-company-registration" method="post">
+    <form id="containerRegistrationForm">
         <label for="containerId">Container ID:</label>
         <input type="text" id="containerId" name="containerId" required><br><br>
 
@@ -19,9 +21,42 @@
         <label for="storageArea">Storage Area Information:</label>
         <input type="text" id="storageArea" name="storageArea" required><br><br>
 
-        <!-- Additional container company registration details can be added here -->
-
-        <input type="submit" value="Register Company">
+        <input type="button" value="Register Container" onclick="submitContainerRegistration()">
     </form>
+
+    <div id="message"></div>
+
+    <script>
+        function submitContainerRegistration() {
+            var form = document.getElementById('containerRegistrationForm');
+            if (!form.checkValidity()) {
+                message.innerHTML = "Please enter a valid ship ID";
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            var url = "http://localhost:3000/submit-container-company-registration";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    var message = document.getElementById('message');
+                    if (xhr.status === 200) {
+                        message.innerHTML = "Container registered successfully";
+                    } else {
+                        message.innerHTML = "Error occurred: " + xhr.responseText;
+                    }
+                }
+            };
+            var data = JSON.stringify({
+                "containerId": document.getElementById("containerId").value,
+                "sourceId": document.getElementById("sourceId").value,
+                "destinationId": document.getElementById("destinationId").value,
+                "storageArea": document.getElementById("storageArea").value
+            });
+            xhr.send(data);
+        }
+    </script>
 </body>
+
 </html>

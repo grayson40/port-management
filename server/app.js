@@ -203,6 +203,19 @@ app.post('/submit-port-exit', (req, res) => {
     handlePortExit(shipId, res);
 });
 
+app.post('/submit-container-company-registration', (req, res) => {
+    const { containerId, sourceId, destinationId, storageArea } = req.body;
+
+    const query = 'INSERT INTO containers (containerID, sourceID, destinationID, storageAreaAddress) VALUES (?, ?, ?, ?)';
+    connection.query(query, [containerId, sourceId, destinationId, storageArea], (err, results, fields) => {
+        if (err) {
+            console.error(err.message);
+            res.send('Error occurred');
+        } else {
+            res.send('Container registered successfully');
+        }
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
