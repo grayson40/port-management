@@ -66,7 +66,32 @@
             fetch(`http://localhost:3000/api/ships/${shipId}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('shipDetailsResult').innerText = JSON.stringify(data, null, 2);
+                    const table = document.createElement('table');
+                    const headerRow = document.createElement('tr');
+
+                    // Create table headers
+                    for (let key in data[0]) {
+                        const th = document.createElement('th');
+                        th.textContent = key;
+                        headerRow.appendChild(th);
+                    }
+                    table.appendChild(headerRow);
+
+                    // Create table rows
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        for (let key in item) {
+                            const td = document.createElement('td');
+                            td.textContent = item[key];
+                            row.appendChild(td);
+                        }
+                        table.appendChild(row);
+                    });
+
+                    // Append the table to the shipDetailsResult div
+                    const shipDetailsResult = document.getElementById('shipDetailsResult');
+                    shipDetailsResult.innerHTML = ''; // Clear the div
+                    shipDetailsResult.appendChild(table);
                 });
         }
 
@@ -74,7 +99,32 @@
             fetch('http://localhost:3000/api/berths')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('berthOverviewResult').innerText = JSON.stringify(data, null, 2);
+                    const table = document.createElement('table');
+                    const headerRow = document.createElement('tr');
+
+                    // Create table headers
+                    for (let key in data[0]) {
+                        const th = document.createElement('th');
+                        th.textContent = key;
+                        headerRow.appendChild(th);
+                    }
+                    table.appendChild(headerRow);
+
+                    // Create table rows
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        for (let key in item) {
+                            const td = document.createElement('td');
+                            td.textContent = item[key];
+                            row.appendChild(td);
+                        }
+                        table.appendChild(row);
+                    });
+
+                    // Append the table to the berthOverviewResult div
+                    const berthOverviewResult = document.getElementById('berthOverviewResult');
+                    berthOverviewResult.innerHTML = ''; // Clear the div
+                    berthOverviewResult.appendChild(table);
                 });
         }
 
