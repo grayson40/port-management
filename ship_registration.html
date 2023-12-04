@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Ship Registration Form</h1>
-    <form action="http://localhost:3000/submit-ship-registration" method="post">
+    <form id="shipRegistrationForm">
         <label for="shipName">Ship Name:</label>
         <input type="text" id="shipName" name="shipName" required><br><br>
 
@@ -15,7 +15,34 @@
 
         <!-- Additional ship details fields can be added here -->
 
-        <input type="submit" value="Register Ship">
+        <input type="button" value="Register Ship" onclick="submitShipRegistration()">
     </form>
+
+    <div id="message"></div>
+
+    <script>
+        function submitShipRegistration() {
+            var xhr = new XMLHttpRequest();
+            var url = "http://localhost:3000/submit-ship-registration";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    var message = document.getElementById('message');
+                    if (xhr.status === 200) {
+                        message.innerHTML = "Ship registered successfully";
+                        document.getElementById("shipRegistrationForm").reset();
+                    } else {
+                        message.innerHTML = "Error occurred: " + xhr.responseText;
+                    }
+                }
+            };
+            var data = JSON.stringify({
+                "shipName": document.getElementById("shipName").value,
+                "shipSize": document.getElementById("shipSize").value
+            });
+            xhr.send(data);
+        }
+    </script>
 </body>
 </html>
