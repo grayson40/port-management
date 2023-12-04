@@ -28,7 +28,8 @@ This README outlines the steps to set up a development server for the Port Manag
             shipName VARCHAR(255),
             shipSize INT,
             berthID INT,
-            enteredPort TIMESTAMP
+            enteredPort TIMESTAMP,
+            exitedPort TIMESTAMP
         );
 
         -- Berths Table
@@ -135,5 +136,5 @@ If you receive the error message:
 - Restart the server with:
 
     ```
-    node apps.js
+    node app.js
     ```
