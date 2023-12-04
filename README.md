@@ -47,6 +47,8 @@ This README outlines the steps to set up a development server for the Port Manag
             containerID INT AUTO_INCREMENT PRIMARY KEY,
             sourceID VARCHAR(255),
             destinationID VARCHAR(255),
+            sourceType VARCHAR(255),
+            destinationType VARCHAR(),
             storageAreaAddress VARCHAR(255)
         );
 
