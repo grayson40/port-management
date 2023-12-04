@@ -204,10 +204,10 @@ app.post('/submit-port-exit', (req, res) => {
 });
 
 app.post('/submit-container-company-registration', (req, res) => {
-    const { companyName, sourceId, destinationId, storageArea } = req.body;
+    const { companyName, sourceId, destinationId, storageArea, sourceType, destinationType } = req.body;
 
-    const query = 'INSERT INTO containers (companyName, sourceID, destinationID, storageAreaAddress) VALUES (?, ?, ?, ?)';
-    connection.query(query, [companyName, sourceId, destinationId, storageArea], (err, results, fields) => {
+    const query = 'INSERT INTO containers (companyName, sourceID, destinationID, sourceType, destinationType, storageAreaAddress) VALUES (?, ?, ?, ?, ?, ?)';
+    connection.query(query, [companyName, sourceId, destinationId, sourceType, destinationType, storageArea], (err, results, fields) => {
         if (err) {
             console.error(err.message);
             res.send('Error occurred');
