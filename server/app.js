@@ -109,7 +109,7 @@ function commitTransaction(res, message) {
             console.error('An error occurred: ' + err.message);
             return connection.rollback(() => res.status(500).send('Error processing your request'));
         }
-        res.json({message: message});
+        res.json({ message: message });
     });
 }
 
@@ -214,6 +214,78 @@ app.post('/submit-container-company-registration', (req, res) => {
         } else {
             res.send('Container registered successfully');
         }
+    });
+});
+
+app.post('/submit-truck-registration', (req, res) => {
+    const { truckName } = req.body;
+
+    // Check if the truck already exists
+    const checkQuery = 'SELECT * FROM trucks WHERE truckName = ?';
+    connection.query(checkQuery, [truckName], (err, results) => {
+        if (err) throw err;
+        if (results.length > 0) {
+            res.status(400).send('Truck already registered');
+        } else {
+            // Insert new truck
+            const insertQuery = 'INSERT INTO trucks (truckName) VALUES (?)';
+            connection.query(insertQuery, [truckName], (err, results) => {
+                if (err) {
+                    console.error(err.message);
+                    res.send('Error occurred');
+                } else {
+                    res.send('Truck registered successfully');
+                }
+            });
+        }
+    });
+});
+
+app.post('/submit-truck-driver-checkin', (req, res) => {
+    const truckId = req.body.truckId;
+
+    // Check if the truck ID exists in the trucks table
+    const truckQuery = 'SELECT * FROM trucks WHERE truckID = ?';
+    connection.query(truckQuery, [truckId], (err, truckResults) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Server error occurred');
+        }
+
+        if (truckResults.length === 0) {
+            return res.status(404).send('Truck ID not found');
+        }
+
+        // Update the enteredPort time to NOW()
+        const updateQuery = 'UPDATE trucks SET enteredPort = NOW() WHERE truckID = ?';
+        connection.query(updateQuery, [truckId], (err, updateResults) => {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).send('Server error occurred');
+            }
+
+            // Find an available storage area
+            const storageQuery = 'SELECT storageAddress FROM storagearea WHERE containerID IS NULL LIMIT 1';
+            connection.query(storageQuery, (err, storageResults) => {
+                if (err) {
+                    console.error(err.message);
+                    return res.status(500).send('Server error occurred');
+                }
+
+                let directions;
+                if (storageResults.length > 0) {
+                    // If an available storage area is found
+                    const availableStorage = storageResults[0].storageAddress;
+                    directions = `Proceed to storage area ${availableStorage} for unloading.`;
+                } else {
+                    // If no available storage area is found
+                    directions = 'No available storage area. Please wait.';
+                }
+
+                // Send back the response
+                res.json({ message: 'Check-in successful', directions: directions });
+            });
+        });
     });
 });
 

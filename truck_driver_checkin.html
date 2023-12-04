@@ -1,18 +1,53 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Truck Driver Check-In</title>
-    <!-- You can add CSS and JavaScript links here -->
+    <!-- Add CSS and JavaScript links here -->
 </head>
+
 <body>
     <h1>Truck Driver Check-In Form</h1>
-    <form action="/submit-truck-driver-checkin" method="post">
+    <form id="truckDriverCheckInForm">
         <label for="truckId">Truck ID:</label>
         <input type="text" id="truckId" name="truckId" required><br><br>
 
         <!-- Additional check-in details can be added here -->
 
-        <input type="submit" value="Check-In">
+        <input type="button" value="Check-In" onclick="submitTruckDriverCheckIn()">
     </form>
+
+    <div id="message"></div>
+
+    <script>
+        function submitTruckDriverCheckIn() {
+            var form = document.getElementById('truckDriverCheckInForm');
+            if (!form.checkValidity()) {
+                message.innerHTML = "Please enter a valid ship ID";
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            var url = "http://localhost:3000/submit-truck-driver-checkin";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    var message = document.getElementById('message');
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        message.innerHTML = "Check-In successful. " + response.directions;
+                    } else {
+                        message.innerHTML = "Error occurred: " + xhr.responseText;
+                    }
+                }
+            };
+            var data = JSON.stringify({
+                "truckId": document.getElementById("truckId").value
+            });
+            xhr.send(data);
+        }
+    </script>
 </body>
+
 </html>
