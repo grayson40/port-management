@@ -3,25 +3,74 @@
 <head>
     <title>Port Admin Management</title>
     <!-- You can add CSS and JavaScript links here -->
+    <style>
+        /* Add some basic styling */
+        div {
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: navy;
+        }
+    </style>
 </head>
 <body>
     <h1>Port Admin Management</h1>
-    <!-- This section will contain links or sections to view different reports and manage port activities -->
-    <div>
+
+    <div id="shipDetails">
         <h2>Ship Details</h2>
-        <!-- Code to view ship details -->
     </div>
-    <div>
+    <div id="berthOverview">
         <h2>Berth Overview</h2>
-        <!-- Code to view berth status -->
     </div>
-    <div>
+    <div id="containerInsights">
         <h2>Container Insights</h2>
-        <!-- Code to view container details -->
     </div>
-    <div>
+    <div id="truckInformation">
         <h2>Truck Information</h2>
-        <!-- Code to view truck information -->
     </div>
+
+    <script>
+        function displayData(elementId, data) {
+            const container = document.getElementById(elementId);
+            const list = document.createElement('ul');
+            
+            data.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = JSON.stringify(item);
+                list.appendChild(listItem);
+            });
+
+            container.appendChild(list);
+        }
+
+        function fetchData() {
+            fetch('http://localhost:3000/api/ships')
+                .then(response => response.json())
+                .then(data => {
+                    displayData('shipDetails', data);
+                });
+
+            fetch('http://localhost:3000/api/berths')
+                .then(response => response.json())
+                .then(data => {
+                    displayData('berthOverview', data);
+                });
+
+            fetch('http://localhost:3000/api/containers')
+                .then(response => response.json())
+                .then(data => {
+                    displayData('containerInsights', data);
+                });
+
+            fetch('http://localhost:3000/api/trucks')
+                .then(response => response.json())
+                .then(data => {
+                    displayData('truckInformation', data);
+                });
+        }
+
+        // Call fetchData when the page loads
+        window.onload = fetchData;
+    </script>
 </body>
 </html>

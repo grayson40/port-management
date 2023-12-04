@@ -3,11 +3,12 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const port = 3000;
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
-const port = 3000;
+app.use(express.static('../'));
 
 // MySQL connection settings
 const connection = mysql.createConnection({
@@ -26,6 +27,43 @@ connection.connect((err) => {
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
+
+// Fetch Ship Details
+app.get('/api/ships', (req, res) => {
+    const query = 'SELECT * FROM Ships';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
+// Fetch Berth Overview
+app.get('/api/berths', (req, res) => {
+    const query = 'SELECT * FROM Berths';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
+// Fetch Container Insights
+app.get('/api/containers', (req, res) => {
+    const query = 'SELECT * FROM Containers';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
+// Fetch Truck Information
+app.get('/api/trucks', (req, res) => {
+    const query = 'SELECT * FROM Trucks';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
 
 app.post('/submit-ship-registration', (req, res) => {
     // Retrieve ship name and shipId from form data
