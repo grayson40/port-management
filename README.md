@@ -4,7 +4,9 @@ This README outlines the steps to set up a development server for the Port Manag
 
 ## Prerequisites
 
-- Node.js and npm (Node Package Manager) installed.
+- [Git](https://git-scm.com/downloads)
+
+- [Node.js](https://nodejs.org/en/download) and npm installed.
 
 - MySQL Server installed and running.
 
