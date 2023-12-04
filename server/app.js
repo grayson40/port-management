@@ -10,7 +10,7 @@ const port = 3000;
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'Sta71750!',
     database: 'port_management'
 });
 
@@ -25,8 +25,8 @@ app.get('/', (req, res) => {
 });
 
 app.post('/submit-ship-registration', (req, res) => {
-    console.log(req.body)
-    const { shipName, shipId } = req.body; // Replace with actual input names
+    // Retrieve ship name and shipId from form data
+    const { shipName, shipId } = req.body;
 
     const query = 'INSERT INTO ships (shipName, shipID) VALUES (?, ?)';
     connection.query(query, [shipName, shipId], (err, results, fields) => {
@@ -39,14 +39,18 @@ app.post('/submit-ship-registration', (req, res) => {
     });
 });
 
-// Endpoint for form submission
 app.post('/submit-port-entry', (req, res) => {
-    const shipId = req.body.shipId; // Retrieve shipId from form data
+    // Retrieve shipId from form data
+    const shipId = req.body.shipId;
+
+    // Get current date and time
+    const now = new Date();
+    const enteredTime = now.toISOString().slice(0, 19).replace('T', ' ');
 
     // SQL query to insert data
-    const query = 'INSERT INTO port_entries (shipId) VALUES (?)';
+    const query = 'UPDATE ships SET enteredPort = ? WHERE shipID = ?';
 
-    connection.query(query, [shipId], (err, result) => {
+    connection.query(query, [enteredTime, shipId], (err, result) => {
         if (err) {
             console.error('An error occurred: ' + err.message);
             res.status(500).send('Error processing your request');
