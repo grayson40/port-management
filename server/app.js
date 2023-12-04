@@ -37,6 +37,15 @@ app.get('/api/ships', (req, res) => {
     });
 });
 
+app.get('/api/ships/:shipId', (req, res) => {
+    const shipId = req.params.shipId;
+    const query = 'SELECT * FROM Ships WHERE shipID = ?';
+    connection.query(query, [shipId], (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
 // Fetch Berth Overview
 app.get('/api/berths', (req, res) => {
     const query = 'SELECT * FROM Berths';
@@ -55,6 +64,15 @@ app.get('/api/containers', (req, res) => {
     });
 });
 
+app.get('/api/containers/:containerId', (req, res) => {
+    const containerId = req.params.containerId;
+    const query = 'SELECT * FROM Containers WHERE containerID = ?';
+    connection.query(query, [containerId], (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
 // Fetch Truck Information
 app.get('/api/trucks', (req, res) => {
     const query = 'SELECT * FROM Trucks';
@@ -63,6 +81,16 @@ app.get('/api/trucks', (req, res) => {
         res.json(results);
     });
 });
+
+app.get('/api/trucks/:truckId', (req, res) => {
+    const truckId = req.params.truckId;
+    const query = 'SELECT * FROM Trucks WHERE truckID = ?';
+    connection.query(query, [truckId], (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
 
 // Helper functions
 function sendServerError(res, err) {

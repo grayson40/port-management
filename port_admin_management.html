@@ -1,76 +1,101 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Port Admin Management</title>
-    <!-- You can add CSS and JavaScript links here -->
+    <!-- Add CSS and JavaScript links here -->
     <style>
-        /* Add some basic styling */
+        /* Basic styling */
         div {
             margin-bottom: 20px;
         }
+
         h2 {
             color: navy;
         }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
+
 <body>
     <h1>Port Admin Management</h1>
 
+    <!-- Ship Details Section -->
     <div id="shipDetails">
         <h2>Ship Details</h2>
+        <div class="input-group">
+            <input type="text" id="shipIdInput" placeholder="Enter Ship ID">
+            <button onclick="fetchShipDetails()">Get Ship Details</button>
+        </div>
+        <div id="shipDetailsResult"></div>
     </div>
+
+    <!-- Berth Overview Section -->
     <div id="berthOverview">
         <h2>Berth Overview</h2>
+        <button onclick="fetchBerthOverview()">Get Berth Overview</button>
+        <div id="berthOverviewResult"></div>
     </div>
+
+    <!-- Container Insights Section -->
     <div id="containerInsights">
         <h2>Container Insights</h2>
+        <div class="input-group">
+            <input type="text" id="containerIdInput" placeholder="Enter Container ID">
+            <button onclick="fetchContainerInsights()">Get Container Insights</button>
+        </div>
+        <div id="containerInsightsResult"></div>
     </div>
+
+    <!-- Truck Information Section -->
     <div id="truckInformation">
         <h2>Truck Information</h2>
+        <div class="input-group">
+            <input type="text" id="truckIdInput" placeholder="Enter Truck ID">
+            <button onclick="fetchTruckInformation()">Get Truck Information</button>
+        </div>
+        <div id="truckInformationResult"></div>
     </div>
 
     <script>
-        function displayData(elementId, data) {
-            const container = document.getElementById(elementId);
-            const list = document.createElement('ul');
-            
-            data.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = JSON.stringify(item);
-                list.appendChild(listItem);
-            });
-
-            container.appendChild(list);
-        }
-
-        function fetchData() {
-            fetch('http://localhost:3000/api/ships')
+        function fetchShipDetails() {
+            const shipId = document.getElementById('shipIdInput').value;
+            fetch(`http://localhost:3000/api/ships/${shipId}`)
                 .then(response => response.json())
                 .then(data => {
-                    displayData('shipDetails', data);
+                    document.getElementById('shipDetailsResult').innerText = JSON.stringify(data, null, 2);
                 });
+        }
 
+        function fetchBerthOverview() {
             fetch('http://localhost:3000/api/berths')
                 .then(response => response.json())
                 .then(data => {
-                    displayData('berthOverview', data);
-                });
-
-            fetch('http://localhost:3000/api/containers')
-                .then(response => response.json())
-                .then(data => {
-                    displayData('containerInsights', data);
-                });
-
-            fetch('http://localhost:3000/api/trucks')
-                .then(response => response.json())
-                .then(data => {
-                    displayData('truckInformation', data);
+                    document.getElementById('berthOverviewResult').innerText = JSON.stringify(data, null, 2);
                 });
         }
 
-        // Call fetchData when the page loads
-        window.onload = fetchData;
+        function fetchContainerInsights() {
+            const containerId = document.getElementById('containerIdInput').value;
+            fetch(`http://localhost:3000/api/containers/${containerId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('containerInsightsResult').innerText = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function fetchTruckInformation() {
+            const truckId = document.getElementById('truckIdInput').value;
+            fetch(`http://localhost:3000/api/trucks/${truckId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('truckInformationResult').innerText = JSON.stringify(data, null, 2);
+                });
+        }
     </script>
 </body>
+
 </html>
