@@ -81,7 +81,7 @@ function commitTransaction(res, message) {
             console.error('An error occurred: ' + err.message);
             return connection.rollback(() => res.status(500).send('Error processing your request'));
         }
-        res.send(message);
+        res.json({message: message});
     });
 }
 
