@@ -9,8 +9,8 @@
 <body>
     <h1>Container Company Registration Form</h1>
     <form id="containerRegistrationForm">
-        <label for="containerId">Container ID:</label>
-        <input type="text" id="containerId" name="containerId" required><br><br>
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" name="companyName" required><br><br>
 
         <label for="sourceId">Source (Ship/Truck ID):</label>
         <input type="text" id="sourceId" name="sourceId" required><br><br>
@@ -49,7 +49,7 @@
                 }
             };
             var data = JSON.stringify({
-                "containerId": document.getElementById("containerId").value,
+                "companyName": document.getElementById("companyName").value,
                 "sourceId": document.getElementById("sourceId").value,
                 "destinationId": document.getElementById("destinationId").value,
                 "storageArea": document.getElementById("storageArea").value
