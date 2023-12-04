@@ -204,10 +204,10 @@ app.post('/submit-port-exit', (req, res) => {
 });
 
 app.post('/submit-container-company-registration', (req, res) => {
-    const { containerId, sourceId, destinationId, storageArea } = req.body;
+    const { companyName, sourceId, destinationId, storageArea } = req.body;
 
-    const query = 'INSERT INTO containers (containerID, sourceID, destinationID, storageAreaAddress) VALUES (?, ?, ?, ?)';
-    connection.query(query, [containerId, sourceId, destinationId, storageArea], (err, results, fields) => {
+    const query = 'INSERT INTO containers (companyName, sourceID, destinationID, storageAreaAddress) VALUES (?, ?, ?, ?)';
+    connection.query(query, [companyName, sourceId, destinationId, storageArea], (err, results, fields) => {
         if (err) {
             console.error(err.message);
             res.send('Error occurred');
@@ -286,6 +286,37 @@ app.post('/submit-truck-driver-checkin', (req, res) => {
                 res.json({ message: 'Check-in successful', directions: directions });
             });
         });
+    });
+});
+
+app.post('/submit-crane-operation', (req, res) => {
+    const { vehicleType, vehicleId } = req.body;
+
+    let query;
+    if (vehicleType === 'ship') {
+        // Query to get containers from a ship
+        query = 'SELECT * FROM containers WHERE sourceID = ?';
+    } else {
+        // Query to get containers for a truck
+        query = 'SELECT * FROM containers WHERE destinationID = ?';
+    }
+
+    connection.query(query, [vehicleId], (err, containerResults) => {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).send('Server error occurred');
+        }
+
+        if (containerResults.length === 0) {
+            return res.status(404).send('No containers found');
+        }
+
+        // Here you can update container status as needed
+        // Example: Mark containers as 'loading' or 'unloading'
+        // This part of the logic will depend on your specific application requirements
+
+        // For demonstration, we just send back the container details
+        res.json({ message: 'Containers fetched successfully', containerDetails: containerResults });
     });
 });
 
