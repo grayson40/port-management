@@ -19,6 +19,12 @@
 
     <script>
         function submitPortExit() {
+            var form = document.getElementById('portExitForm');
+            if (!form.checkValidity()) {
+                message.innerHTML = "Please enter a valid ship ID";
+                return;
+            }
+
             var xhr = new XMLHttpRequest();
             var url = "http://localhost:3000/submit-port-exit";
             xhr.open("POST", url, true);

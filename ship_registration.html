@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Ship Registration</title>
     <!-- You can add CSS and JavaScript links here -->
 </head>
+
 <body>
     <h1>Ship Registration Form</h1>
     <form id="shipRegistrationForm">
@@ -22,6 +24,12 @@
 
     <script>
         function submitShipRegistration() {
+            var form = document.getElementById('shipRegistrationForm');
+            if (!form.checkValidity()) {
+                message.innerHTML = "Please enter a valid ship name and size";
+                return;
+            }
+
             var xhr = new XMLHttpRequest();
             var url = "http://localhost:3000/submit-ship-registration";
             xhr.open("POST", url, true);
@@ -45,4 +53,5 @@
         }
     </script>
 </body>
+
 </html>

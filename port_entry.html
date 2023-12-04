@@ -19,6 +19,12 @@
 
     <script>
         function submitPortEntry() {
+            var form = document.getElementById('portEntryForm');
+            if (!form.checkValidity()) {
+                message.innerHTML = "Please enter a valid ship ID";
+                return;
+            }
+
             var xhr = new XMLHttpRequest();
             var url = "http://localhost:3000/submit-port-entry";
             xhr.open("POST", url, true);
