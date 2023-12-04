@@ -88,13 +88,22 @@ This README outlines the steps to set up a development server for the Port Manag
 
 ## Step 2: Setting Up Your Node.js Application
 
-1. Install Dependencies:
+1. Clone Repository:
 
     ```
+    git clone https://github.com/grayson40/port-management.git
+    cd port-management
+    git checkout master
+    ```
+
+2. Install Dependencies:
+
+    ```
+    cd server
     npm install
     ```
 
-2. Set Up Express and MySQL Connection:
+3. Set Up Express and MySQL Connection:
 
     - Edit app.js to set up your server and database connection:
 
@@ -114,7 +123,6 @@ This README outlines the steps to set up a development server for the Port Manag
 Run your server using the following command:
 
 ```
-cd server
 node app.js
 ```
 
