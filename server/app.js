@@ -1,9 +1,12 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cors());
 const port = 3000;
 
 // MySQL connection settings
@@ -26,10 +29,10 @@ app.get('/', (req, res) => {
 
 app.post('/submit-ship-registration', (req, res) => {
     // Retrieve ship name and shipId from form data
-    const { shipName, shipId } = req.body;
+    const { shipName, shipSize } = req.body;
 
-    const query = 'INSERT INTO ships (shipName, shipID) VALUES (?, ?)';
-    connection.query(query, [shipName, shipId], (err, results, fields) => {
+    const query = 'INSERT INTO ships (shipName, shipSize) VALUES (?, ?)';
+    connection.query(query, [shipName, shipSize], (err, results, fields) => {
         if (err) {
             console.error(err.message);
             res.send('Error occurred');
@@ -47,15 +50,130 @@ app.post('/submit-port-entry', (req, res) => {
     const now = new Date();
     const enteredTime = now.toISOString().slice(0, 19).replace('T', ' ');
 
-    // SQL query to insert data
-    const query = 'UPDATE ships SET enteredPort = ? WHERE shipID = ?';
+    // SQL query to find an empty berth
+    const findBerthQuery = 'SELECT berthID FROM berths WHERE isOccupied = 0 LIMIT 1';
 
-    connection.query(query, [enteredTime, shipId], (err, result) => {
+    connection.query(findBerthQuery, (err, result) => {
         if (err) {
             console.error('An error occurred: ' + err.message);
             res.status(500).send('Error processing your request');
+        } else if (result.length === 0) {
+            res.status(500).send('No empty berths available');
         } else {
-            res.send('Port entry recorded successfully');
+            const berthId = result[0].berthID;
+
+            // SQL query to update the ships table
+            const updateShipQuery = 'UPDATE ships SET enteredPort = ?, berthID = ? WHERE shipID = ?';
+
+            // SQL query to mark the berth as occupied
+            const updateBerthQuery = 'UPDATE berths SET isOccupied = 1 WHERE berthID = ?';
+
+            // Start a transaction
+            connection.beginTransaction((err) => {
+                if (err) {
+                    console.error('An error occurred: ' + err.message);
+                    res.status(500).send('Error processing your request');
+                } else {
+                    // Update the ships table
+                    connection.query(updateShipQuery, [enteredTime, berthId, shipId], (err, result) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('An error occurred: ' + err.message);
+                                res.status(500).send('Error processing your request');
+                            });
+                        }
+
+                        // Mark the berth as occupied
+                        connection.query(updateBerthQuery, [berthId], (err, result) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    console.error('An error occurred: ' + err.message);
+                                    res.status(500).send('Error processing your request');
+                                });
+                            }
+
+                            // Commit the transaction
+                            connection.commit((err) => {
+                                if (err) {
+                                    return connection.rollback(() => {
+                                        console.error('An error occurred: ' + err.message);
+                                        res.status(500).send('Error processing your request');
+                                    });
+                                }
+
+                                // Send the berth number to the client
+                                res.send('Port entry recorded successfully. Berth number: ' + berthId);
+                            });
+                        });
+                    });
+                }
+            });
+        }
+    });
+});
+
+app.post('/submit-port-exit', (req, res) => {
+    // Retrieve shipId from form data
+    const shipId = req.body.shipId;
+
+    // SQL query to find the berth occupied by the ship
+    const findBerthQuery = 'SELECT berthID FROM ships WHERE shipID = ?';
+
+    connection.query(findBerthQuery, [shipId], (err, result) => {
+        if (err) {
+            console.error('An error occurred: ' + err.message);
+            res.status(500).send('Error processing your request');
+        } else if (result.length === 0) {
+            res.status(500).send('No ship found with the provided ID');
+        } else {
+            const berthId = result[0].berthID;
+
+            // SQL query to update the ships table
+            const updateShipQuery = 'UPDATE ships SET exitedPort = NOW() WHERE shipID = ?';
+
+            // SQL query to free up the berth
+            const updateBerthQuery = 'UPDATE berths SET isOccupied = 0 WHERE berthID = ?';
+
+            // Start a transaction
+            connection.beginTransaction((err) => {
+                if (err) {
+                    console.error('An error occurred: ' + err.message);
+                    res.status(500).send('Error processing your request');
+                } else {
+                    // Update the ships table
+                    connection.query(updateShipQuery, [shipId], (err, result) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('An error occurred: ' + err.message);
+                                res.status(500).send('Error processing your request');
+                            });
+                        }
+
+                        // Free up the berth
+                        connection.query(updateBerthQuery, [berthId], (err, result) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    console.error('An error occurred: ' + err.message);
+                                    res.status(500).send('Error processing your request');
+                                });
+                            }
+
+                            // Commit the transaction
+                            connection.commit((err) => {
+                                if (err) {
+                                    return connection.rollback(() => {
+                                        console.error('An error occurred: ' + err.message);
+                                        res.status(500).send('Error processing your request');
+                                    });
+                                }
+
+                                // Send a success message to the client
+                                res.send('Port exit recorded successfully. Berth ' + berthId + ' is now available.');
+                            });
+                        });
+                    });
+                }
+            });
         }
     });
 });
