@@ -98,3 +98,24 @@ Run your server using the following command:
 cd server
 node app.js
 ```
+
+### Troubleshooting
+
+If you receive the error message: 
+
+`'Client does not support authentication protocol requested by server; consider upgrading MySQL client'`
+
+- Quit the server with `Ctrl+C`.
+
+- Execute the following in your MySQL command line client:
+
+    ```
+    ALTER USER 'your_username'@'localhost' IDENTIFIED WITH mysql_native_password BY 'your_password';
+    FLUSH PRIVILEGES;
+    ```
+
+- Restart the server with:
+
+    ```
+    node apps.js
+    ```
