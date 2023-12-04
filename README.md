@@ -67,23 +67,23 @@ This README outlines the steps to set up a development server for the Port Manag
         );
         ```
 
-    3. Seed initial data:
+3. Seed initial data:
 
-        ```
-        INSERT INTO Berths (berthName, shipID, isOccupied) VALUES 
-        ('Berth 1', NULL, 0),
-        ('Berth 2', NULL, 0),
-        ('Berth 3', NULL, 0),
-        ('Berth 4', NULL, 0),
-        ('Berth 5', NULL, 0);
+    ```
+    INSERT INTO Berths (berthName, shipID, isOccupied) VALUES 
+    ('Berth 1', NULL, 0),
+    ('Berth 2', NULL, 0),
+    ('Berth 3', NULL, 0),
+    ('Berth 4', NULL, 0),
+    ('Berth 5', NULL, 0);
 
-        INSERT INTO StorageArea (storageAddress, containerID) VALUES 
-        ('Row A', NULL),
-        ('Row B', NULL),
-        ('Row C', NULL),
-        ('Row D', NULL),
-        ('Row E', NULL);
-        ```
+    INSERT INTO StorageArea (storageAddress, containerID) VALUES 
+    ('Row A', NULL),
+    ('Row B', NULL),
+    ('Row C', NULL),
+    ('Row D', NULL),
+    ('Row E', NULL);
+    ```
 
 ## Step 2: Setting Up Your Node.js Application
 
