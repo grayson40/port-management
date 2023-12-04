@@ -128,26 +128,35 @@ app.post('/submit-ship-registration', (req, res) => {
     });
 });
 
-function handlePortEntry(shipId, enteredTime, res) {
-    const findBerthQuery = 'SELECT berthID FROM berths WHERE isOccupied = 0 LIMIT 1';
-    connection.query(findBerthQuery, (err, berths) => {
+function handlePortEntry(shipId, res) {
+    const findShipQuery = 'SELECT berthID FROM ships WHERE shipID = ?';
+    connection.query(findShipQuery, [shipId], (err, ships) => {
         if (err) return sendServerError(res, err);
-        if (berths.length === 0) return res.status(500).send('No empty berths available');
+        if (ships.length === 0) return res.status(500).send('No ship found with the provided ID');
 
-        const berthId = berths[0].berthID;
-        updateShipAndBerthTables(shipId, berthId, enteredTime, res);
+        const berthId = ships[0].berthID;
+        if (berthId !== null) return res.status(500).send('The ship is already in a berth');
+
+        const findBerthQuery = 'SELECT berthID FROM berths WHERE isOccupied = 0 LIMIT 1';
+        connection.query(findBerthQuery, (err, berths) => {
+            if (err) return sendServerError(res, err);
+            if (berths.length === 0) return res.status(500).send('No empty berths available');
+
+            const berthId = berths[0].berthID;
+            updateShipAndBerthTables(shipId, berthId, res);
+        });
     });
 }
 
-function updateShipAndBerthTables(shipId, berthId, enteredTime, res) {
-    const updateShipQuery = 'UPDATE ships SET enteredPort = ?, berthID = ? WHERE shipID = ?';
-    const updateBerthQuery = 'UPDATE berths SET isOccupied = 1 WHERE berthID = ?';
+function updateShipAndBerthTables(shipId, berthId, res) {
+    const updateShipQuery = 'UPDATE ships SET enteredPort = NOW(), berthID = ?, exitedPort = NULL WHERE shipID = ?';
+    const updateBerthQuery = 'UPDATE berths SET isOccupied = 1, shipID = ? WHERE berthID = ?';
 
     connection.beginTransaction(err => {
         if (err) return sendServerError(res, err);
-        connection.query(updateShipQuery, [enteredTime, berthId, shipId], err => {
+        connection.query(updateShipQuery, [berthId, shipId], err => {
             if (err) return rollbackTransaction(res, err);
-            connection.query(updateBerthQuery, [berthId], err => {
+            connection.query(updateBerthQuery, [shipId, berthId], err => {
                 if (err) return rollbackTransaction(res, err);
                 commitTransaction(res, 'Port entry recorded successfully. Berth number: ' + berthId);
             });
@@ -157,8 +166,7 @@ function updateShipAndBerthTables(shipId, berthId, enteredTime, res) {
 
 app.post('/submit-port-entry', (req, res) => {
     const shipId = req.body.shipId;
-    const enteredTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    handlePortEntry(shipId, enteredTime, res);
+    handlePortEntry(shipId, res);
 });
 
 function handlePortExit(shipId, res) {
@@ -168,13 +176,15 @@ function handlePortExit(shipId, res) {
         if (ships.length === 0) return res.status(500).send('No ship found with the provided ID');
 
         const berthId = ships[0].berthID;
+        if (berthId === null) return res.status(500).send('The ship is not currently in a berth');
+
         freeUpBerthAndUpdateShip(shipId, berthId, res);
     });
 }
 
 function freeUpBerthAndUpdateShip(shipId, berthId, res) {
-    const updateShipQuery = 'UPDATE ships SET exitedPort = NOW() WHERE shipID = ?';
-    const updateBerthQuery = 'UPDATE berths SET isOccupied = 0 WHERE berthID = ?';
+    const updateShipQuery = 'UPDATE ships SET exitedPort = NOW(), berthID = NULL WHERE shipID = ?';
+    const updateBerthQuery = 'UPDATE berths SET isOccupied = 0, shipID = NULL WHERE berthID = ?';
 
     connection.beginTransaction(err => {
         if (err) return sendServerError(res, err);
