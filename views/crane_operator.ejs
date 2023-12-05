@@ -40,7 +40,7 @@
                     var message = document.getElementById('operationResult');
                     if (xhr.status === 200) {
                         var response = JSON.parse(xhr.responseText);
-                        message.innerHTML = "Operation submitted successfully. " + response.details;
+                        message.innerHTML = "Operation submitted successfully. " + response.message;
                     } else {
                         message.innerHTML = "Error occurred: " + xhr.responseText;
                     }

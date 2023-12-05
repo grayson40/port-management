@@ -379,10 +379,10 @@ app.post('/submit-crane-operation', (req, res) => {
 
             if (vehicleType === 'ship') {
                 // Query to get containers from a ship
-                query = 'SELECT * FROM containers WHERE sourceType = ship AND sourceID = ?';
+                query = 'SELECT * FROM containers WHERE sourceType = "ship" AND sourceID = ?';
             } else {
                 // Query to get containers from a truck
-                query = 'SELECT * FROM containers WHERE sourceType = truck AND sourceID = ?';
+                query = 'SELECT * FROM containers WHERE sourceType = "truck" AND sourceID = ?';
             }       
             
             // Execute query and update storage area and container
@@ -415,19 +415,13 @@ app.post('/submit-crane-operation', (req, res) => {
                         console.error(err.message);
                         return res.status(500).send('Server error occurred');
                     }
-                })  
-                    
+                }) 
+                const message = `Container ${containerID} loaded into storage area ${storageAddress}`;
+                res.json({ message: message });
             })
-
-            // return res.status(404).send('No containers found');
+        } else {
+            res.json({ message: 'Containers fetched successfully',  });
         }
-
-        // Here you can update container status as needed
-        // Example: Mark containers as 'loading' or 'unloading'
-        // This part of the logic will depend on your specific application requirements
-        
-        // For demonstration, we just send back the container details
-        res.json({ message: 'Containers fetched successfully', containerDetails: containerResults });
     });
 });
 
