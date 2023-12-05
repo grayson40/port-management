@@ -355,28 +355,77 @@ app.post('/submit-crane-operation', (req, res) => {
     const { vehicleType, vehicleId } = req.body;
 
     let query;
-    if (vehicleType === 'ship') {
-        // Query to get containers from a ship
-        query = 'SELECT * FROM containers WHERE sourceID = ?';
-    } else {
-        // Query to get containers for a truck
-        query = 'SELECT * FROM containers WHERE destinationID = ?';
-    }
 
-    connection.query(query, [vehicleId], (err, containerResults) => {
+    // Check the storage area to see if the container needs to be loaded or unleaded
+    query = 'SELECT * FROM storageArea WHERE containerID IS NOT NULL';
+
+    
+    // if (vehicleType === 'ship') {
+    //     // Query to get containers from a ship
+    //     query = 'SELECT * FROM containers WHERE sourceType = ship AND sourceID = ?';
+    // } else {
+    //     // Query to get containers from a truck
+    //     query = 'SELECT * FROM containers WHERE sourceType = truck AND sourceID = ?';
+    // }
+
+    connection.query(query, (err, storageResults) => {
         if (err) {
             console.error(err.message);
             return res.status(500).send('Server error occurred');
         }
 
-        if (containerResults.length === 0) {
-            return res.status(404).send('No containers found');
+        if (storageResults.length === 0) {
+            // We're loading into storage
+
+            if (vehicleType === 'ship') {
+                // Query to get containers from a ship
+                query = 'SELECT * FROM containers WHERE sourceType = ship AND sourceID = ?';
+            } else {
+                // Query to get containers from a truck
+                query = 'SELECT * FROM containers WHERE sourceType = truck AND sourceID = ?';
+            }       
+            
+            // Execute query and update storage area and container
+            connection.query(query, [vehicleId], (err, containerResults) => {
+                if (err){
+                    console.error(err.message);
+                    return res.status(500).send('Server error occurred');
+                }
+
+                if (containerResults.length === 0){
+                    return res.status(404).send('No containers found');
+                }
+                
+                const containerID = containerResults[0].containerID;
+                const storageAddress = containerResults[0].storageAreaAddress;
+        
+                query = 'UPDATE storageArea SET containerID = ? WHERE storageAddress = ?';
+
+                connection.query(query, [containerID, storageAddress], (err, storageUpdateResult) =>{
+                    if (err){
+                        console.error(err.message);
+                        return res.status(500).send('Server error occurred');
+                    }
+                })
+
+                query = 'UPDATE containers SET status = "storage" WHERE containerID = ?'
+
+                connection.query(query, [containerID], (err, containerUpdateResult) =>{
+                    if (err){
+                        console.error(err.message);
+                        return res.status(500).send('Server error occurred');
+                    }
+                })  
+                    
+            })
+
+            // return res.status(404).send('No containers found');
         }
 
         // Here you can update container status as needed
         // Example: Mark containers as 'loading' or 'unloading'
         // This part of the logic will depend on your specific application requirements
-
+        
         // For demonstration, we just send back the container details
         res.json({ message: 'Containers fetched successfully', containerDetails: containerResults });
     });
