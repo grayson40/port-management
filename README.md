@@ -48,7 +48,7 @@ This README outlines the steps to set up a development server for the Port Manag
             sourceID VARCHAR(255),
             destinationID VARCHAR(255),
             sourceType VARCHAR(255),
-            destinationType VARCHAR(),
+            destinationType VARCHAR(255),
             storageAreaAddress VARCHAR(255)
         );
 
