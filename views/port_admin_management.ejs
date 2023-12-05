@@ -68,7 +68,7 @@
     <script>
         function fetchShipDetails() {
             const shipId = document.getElementById('shipIdInput').value;
-            fetch(`http://localhost:3000/api/ships/${shipId}`)
+            fetch(`/api/ships/${shipId}`)
                 .then(response => response.json())
                 .then(data => {
                     const table = document.createElement('table');
@@ -110,7 +110,7 @@
         }
 
         function fetchBerthOverview() {
-            fetch('http://localhost:3000/api/berths')
+            fetch('/api/berths')
                 .then(response => response.json())
                 .then(data => {
                     const table = document.createElement('table');
@@ -144,7 +144,7 @@
 
         function fetchContainerInsights() {
             const containerId = document.getElementById('containerIdInput').value;
-            fetch(`http://localhost:3000/api/containers/${containerId}`)
+            fetch(`/api/containers/${containerId}`)
                 .then(response => response.json())
                 .then(data => {
                     const table = document.createElement('table');
@@ -178,7 +178,7 @@
 
         function fetchTruckInformation() {
             const truckId = document.getElementById('truckIdInput').value;
-            fetch(`http://localhost:3000/api/trucks/${truckId}`)
+            fetch(`/api/trucks/${truckId}`)
                 .then(response => response.json())
                 .then(data => {
                     const table = document.createElement('table');
