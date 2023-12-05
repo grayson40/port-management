@@ -68,7 +68,8 @@ This README outlines the steps to set up a development server for the Port Manag
         CREATE TABLE Trucks (
             truckID INT AUTO_INCREMENT PRIMARY KEY,
             truckName VARCHAR(255),
-            enteredPort TIMESTAMP
+            enteredPort TIMESTAMP,
+            hasContainer BOOLEAN DEFAULT FALSE
         );
         ```
 
@@ -88,6 +89,8 @@ This README outlines the steps to set up a development server for the Port Manag
     ('Row C', NULL),
     ('Row D', NULL),
     ('Row E', NULL);
+
+    INSERT INTO Cranes VALUES ();
     ```
 
 ## Step 2: Setting Up Your Node.js Application
