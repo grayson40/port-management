@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Container Company Registration</title>
+    <!-- You can add CSS and JavaScript links here -->
+</head>
+
+<body>
+    <h1>Container Company Registration Form</h1>
+    <form id="containerRegistrationForm">
+
+        <label for="companyName">Company Name:</label>
+        <input type="text" id="companyName" name="companyName" required><br><br>
+
+        <!-- Source Type Radio Buttons -->
+        <fieldset>
+            <legend>Source Type</legend>
+            <input type="radio" id="sourceShip" name="sourceType" value="ship" checked>
+            <label for="sourceShip">Ship</label>
+            <input type="radio" id="sourceTruck" name="sourceType" value="truck">
+            <label for="sourceTruck">Truck</label>
+        </fieldset>
+        <label for="sourceId">Source ID:</label>
+        <input type="text" id="sourceId" name="sourceId" required><br><br>
+
+        <!-- Destination Type Radio Buttons -->
+        <fieldset>
+            <legend>Destination Type</legend>
+            <input type="radio" id="destinationShip" name="destinationType" value="ship" checked>
+            <label for="destinationShip">Ship</label>
+            <input type="radio" id="destinationTruck" name="destinationType" value="truck">
+            <label for="destinationTruck">Truck</label>
+        </fieldset>
+        <label for="destinationId">Destination ID:</label>
+        <input type="text" id="destinationId" name="destinationId" required><br><br>
+
+        <label for="storageArea">Storage Area Information:</label>
+        <input type="text" id="storageArea" name="storageArea" required><br><br>
+
+        <input type="button" value="Register Container" onclick="submitContainerRegistration()">
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+        function submitContainerRegistration() {
+            var form = document.getElementById('containerRegistrationForm');
+            if (!form.checkValidity()) {
+                message.innerHTML = "Please enter all form fields";
+                return;
+            }
+
+            var xhr = new XMLHttpRequest();
+            var url = "http://localhost:3000/submit-container-company-registration";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    var message = document.getElementById('message');
+                    if (xhr.status === 200) {
+                        message.innerHTML = "Container registered successfully";
+                    } else {
+                        message.innerHTML = "Error occurred: " + xhr.responseText;
+                    }
+                }
+            };
+            var data = JSON.stringify({
+                "companyName": document.getElementById("companyName").value,
+                "sourceType": document.querySelector('input[name="sourceType"]:checked').value,
+                "sourceId": document.getElementById("sourceId").value,
+                "destinationType": document.querySelector('input[name="destinationType"]:checked').value,
+                "destinationId": document.getElementById("destinationId").value,
+                "storageArea": document.getElementById("storageArea").value
+            });
+            xhr.send(data);
+        }
+    </script>
+</body>
+
+</html>
