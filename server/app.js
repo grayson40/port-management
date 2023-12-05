@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+require('dotenv').config();
 
 const port = 3000;
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.static('../'));
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'COP4710_isgr8',
+    password: process.env.MYSQL_PASSWORD,
     database: 'port_management'
 });
 
