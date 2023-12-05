@@ -14,7 +14,7 @@ app.use(express.static('../'));
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'COP4710_isgr8',
     database: 'port_management'
 });
 
@@ -23,9 +23,53 @@ connection.connect((err) => {
     console.log('Connected to MySQL Server!');
 });
 
+app.set('view engine', 'ejs');
+app.set('views', '../views');
 
+//Serve views for each page
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    console.log("Hello world!");
+    res.render("index");
+});
+
+app.get('/ship_registration', (req, res) => {
+    console.log("Navigated to ship registration");
+    res.render("ship_registration");
+});
+
+app.get('/container_company_registration', (req, res) => {
+    console.log("Navigated to container_company_registration");
+    res.render("container_company_registration");
+});
+
+app.get('/crane_operator', (req, res) => {
+    console.log("Navigated to crane_operator");
+    res.render("crane_operator");
+});
+
+app.get('/port_entry', (req, res) => {
+    console.log("Navigated to port_entry");
+    res.render("port_entry");
+});
+
+app.get('/port_exit', (req, res) => {
+    console.log("Navigated to port_exit");
+    res.render("port_exit");
+});
+
+app.get('/truck_driver_checkin', (req, res) => {
+    console.log("Navigated to truck_driver_checkin");
+    res.render("truck_driver_checkin");
+});
+
+app.get('/truck_registration', (req, res) => {
+    console.log("Navigated to truck_registration");
+    res.render("truck_registration");
+});
+
+app.get('/port_admin_management', (req, res) => {
+    console.log("Navigated to port_admin_management");
+    res.render("port_admin_management");
 });
 
 // Fetch Ship Details
