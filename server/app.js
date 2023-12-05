@@ -264,26 +264,52 @@ app.post('/submit-truck-driver-checkin', (req, res) => {
                 return res.status(500).send('Server error occurred');
             }
 
-            // Find an available storage area
-            const storageQuery = 'SELECT storageAddress FROM storagearea WHERE containerID IS NULL LIMIT 1';
-            connection.query(storageQuery, (err, storageResults) => {
+            // Find the container ID on the truck
+            const incomingContainers = 'SELECT storageAreaAddress FROM containers WHERE sourceType="truck" AND sourceID=?';
+            connection.query(incomingContainers, [truckId], (err, inContainers) => {
+                // log the error message and send a 500 status code with a message
                 if (err) {
                     console.error(err.message);
                     return res.status(500).send('Server error occurred');
                 }
 
-                let directions;
-                if (storageResults.length > 0) {
-                    // If an available storage area is found
-                    const availableStorage = storageResults[0].storageAddress;
-                    directions = `Proceed to storage area ${availableStorage} for unloading.`;
-                } else {
-                    // If no available storage area is found
-                    directions = 'No available storage area. Please wait.';
-                }
+                // If no incoming containers are found
+                if (inContainers.length === 0) {
+                    // Define a query to select container IDs from the containers table where the destination ID matches the truck ID
+                    const outgoingContainters = 'SELECT storageAreaAddress FROM containers WHERE destinationType="truck" AND destinationID=?';
 
-                // Send back the response
-                res.json({ message: 'Check-in successful', directions: directions });
+                    // Execute the query
+                    connection.query(outgoingContainters, [truckId], (err, outContainers) => {
+                        // log the error message and send a 500 status code with a message
+                        if (err) {
+                            console.error(err.message);
+                            return res.status(500).send('Server error occurred');
+                        }
+
+                        // If no containers are found, send a 404 status code with a message
+                        if (outContainers.length === 0) {
+                            return res.status(404).send('No containers found');
+                        }
+
+                        // Get the storage area address from the first container in the results
+                        const storageAddress = outContainers[0].storageAreaAddress;
+
+                        // Create a directions message
+                        const directions = `Proceed to storage area ${storageAddress} for loading.`;
+
+                        // Send back the response with a success message and the directions
+                        res.json({ message: 'Check-in successful', directions: directions });
+                    });
+                } else {
+                    // Get the storage area address from the first container in the results
+                    const address = inContainers[0].storageAreaAddress;
+    
+                    // Create a directions message
+                    const directions = `Proceed to storage area ${address} for unloading.`;
+    
+                    // Send back the response with a success message and the directions
+                    res.json({ message: 'Check-in successful', directions: directions });
+                }
             });
         });
     });
