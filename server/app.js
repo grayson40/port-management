@@ -93,11 +93,21 @@ app.get('/api/berths', (req, res) => {
 
 // Fetch Container Insights
 app.get('/api/containers', (req, res) => {
-    const query = 'SELECT * FROM Containers';
-    connection.query(query, (err, results) => {
-        if (err) throw err;
-        res.json(results);
-    });
+    const loaded = req.query.loaded;
+    if (loaded === false || loaded === 'false') {
+        const query = 'SELECT * FROM Containers WHERE status IS NULL OR status = "storage"';
+        connection.query(query, (err, results) => {
+            if (err) throw err;
+            if (results.length === 0) return res.status(404).send('No containers found')
+            res.json(results);
+        });
+    } else {
+        const query = 'SELECT * FROM Containers';
+        connection.query(query, (err, results) => {
+            if (err) throw err;
+            res.json(results);
+        });
+    }
 });
 
 app.get('/api/containers/:containerId', (req, res) => {
