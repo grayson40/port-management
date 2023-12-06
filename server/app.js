@@ -415,7 +415,7 @@ app.post('/submit-crane-operation', (req, res) => {
                         return res.status(500).send('Server error occurred');
                     }
                 })
-                const message = `Container ${containerID} loaded into storage area ${storageAddress}`;
+                const message = `Container ${containerID} unloaded into storage area ${storageAddress} from ${vehicleType} ${vehicleId}`;
                 res.json({ message: message });
             })
         } else {
@@ -460,7 +460,7 @@ app.post('/submit-crane-operation', (req, res) => {
                         return res.status(500).send('Server error occurred');
                     }
                 })
-                const message = `Container ${containerID} unloaded from storage area ${storageAddress}`;
+                const message = `Container ${containerID} loaded from storage area ${storageAddress} into ${vehicleType} ${vehicleId}`;
                 res.json({ message: message });
             })
         }
