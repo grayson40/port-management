@@ -84,11 +84,11 @@ This README outlines the steps to set up a development server for the Port Manag
     ('Berth 5', NULL, 0);
 
     INSERT INTO StorageArea (storageAddress, containerID) VALUES 
-    ('Row A', NULL),
-    ('Row B', NULL),
-    ('Row C', NULL),
-    ('Row D', NULL),
-    ('Row E', NULL);
+    ('A', NULL),
+    ('B', NULL),
+    ('C', NULL),
+    ('D', NULL),
+    ('E', NULL);
 
     INSERT INTO Cranes VALUES ();
     ```
