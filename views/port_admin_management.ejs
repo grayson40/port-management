@@ -43,7 +43,25 @@
 
 <body>
     <h1>Port Admin Management</h1>
-    
+    <% if(cookie == undefined) { %>
+        <a href="/">
+            <img src="../views/images/home_button.png" id="cornerHomeButton" />
+        </a>
+        <div id="loginScreen">
+            <img src="../views/images/lock.png" id="lock"/>
+            <h2>Please login to continue as admin:</h2>
+            <form id="loginForm">
+                <label for="username">Username</label>
+                <input type="text" id="username" />
+                <br/>
+                <label for="password">Password</label>
+                <input type="password" id="password" />
+                <br/>
+                <span display="none" id="loginError"></span>
+                <button type="button" onclick="loginAdmin()" id="loginButton">Login</button>
+            </form>
+        </div>
+    <% } %>
     <!-- Ship Details Section -->
     <div id="shipDetails">
         <h2>Ship Details</h2>
@@ -84,6 +102,34 @@
     <%- include('./partials/footer.ejs') %>
 
     <script>
+        function loginAdmin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            let xhr = new XMLHttpRequest();
+            let url = "/login";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json"); 
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        document.getElementById('loginScreen').style.display = "none";
+                        document.getElementById('cornerHomeButton').style.display = "none";
+                        const d = new Date();
+                        d.setTime(d.getTime() + (2*60*60*1000));
+                        let expires = "expires="+ d.toUTCString();
+                        document.cookie = "username=" + username + ";" + "password=" + password + ";" + expires + ";path=/port_admin_management";
+                    } else {
+                        document.getElementById('loginError').innerHTML = "Invalid login";
+                    }
+                }
+            };
+            let data = JSON.stringify({
+                "username": username,
+                "password": password
+            });
+            xhr.send(data);
+        }
+
         function fetchShipDetails() {
             const shipId = document.getElementById('shipIdInput').value;
             fetch(`/api/ships/${shipId}`)

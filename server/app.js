@@ -61,7 +61,8 @@ app.get('/truck_registration', (req, res) => {
 });
 
 app.get('/port_admin_management', (req, res) => {
-    res.render("port_admin_management");
+    console.log(req.headers.cookie);
+    res.render("port_admin_management", {cookie: req.headers.cookie});
 });
 
 // Fetch Ship Details
@@ -137,6 +138,21 @@ app.get('/api/trucks/:truckId', (req, res) => {
     });
 });
 
+// Login for admin page
+app.post('/login', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const query = 'SELECT * FROM Admins WHERE username = ? AND password = ?';
+    connection.query(query, [username, password], (err, results) => {
+        if (err) throw err;
+        if (results.length > 0) {
+            res.sendStatus(200);
+        }
+        else {
+            res.status(404).send('No admins were found');
+        }
+    });
+});
 
 // Helper functions
 function sendServerError(res, err) {
