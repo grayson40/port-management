@@ -354,10 +354,8 @@ app.post('/submit-truck-driver-checkin', (req, res) => {
 app.post('/submit-crane-operation', (req, res) => {
     const { vehicleType, vehicleId } = req.body;
 
-    let query;
-
     // Check the storage area to see if the container needs to be loaded or unleaded
-    query = 'SELECT * FROM storageArea WHERE containerID IS NOT NULL';
+    const storageAreaQuery = 'SELECT * FROM storageArea WHERE containerID IS NOT NULL';
 
     
     // if (vehicleType === 'ship') {
@@ -368,7 +366,7 @@ app.post('/submit-crane-operation', (req, res) => {
     //     query = 'SELECT * FROM containers WHERE sourceType = truck AND sourceID = ?';
     // }
 
-    connection.query(query, (err, storageResults) => {
+    connection.query(storageAreaQuery, (err, storageResults) => {
         if (err) {
             console.error(err.message);
             return res.status(500).send('Server error occurred');
@@ -399,18 +397,18 @@ app.post('/submit-crane-operation', (req, res) => {
                 const containerID = containerResults[0].containerID;
                 const storageAddress = containerResults[0].storageAreaAddress;
         
-                query = 'UPDATE storageArea SET containerID = ? WHERE storageAddress = ?';
+                const storageUpdateQuery = 'UPDATE storageArea SET containerID = ? WHERE storageAddress = ?';
 
-                connection.query(query, [containerID, storageAddress], (err, storageUpdateResult) =>{
+                connection.query(storageUpdateQuery, [containerID, storageAddress], (err, storageUpdateResult) =>{
                     if (err){
                         console.error(err.message);
                         return res.status(500).send('Server error occurred');
                     }
                 })
 
-                query = 'UPDATE containers SET status = "storage" WHERE containerID = ?'
+                const containerUpdateQuery = 'UPDATE containers SET status = "storage" WHERE containerID = ?'
 
-                connection.query(query, [containerID], (err, containerUpdateResult) =>{
+                connection.query(containerUpdateQuery, [containerID], (err, containerUpdateResult) =>{
                     if (err){
                         console.error(err.message);
                         return res.status(500).send('Server error occurred');
