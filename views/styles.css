@@ -2,6 +2,7 @@ body {
     margin-top: 0px;
     margin-left: 0px;
     margin-right: 0px;
+    background-color: rgb(214, 235, 253)
 }
 
 #welcome {
@@ -62,4 +63,37 @@ body {
 
 h4 {
     display: inline-block;
+}
+
+h1 {
+    margin-left: 20px;
+}
+
+form {
+    margin-left: 60px;
+}
+
+input {
+    margin-top: 10px;
+}
+
+#message {
+    margin-left: 60px;
+    margin-top: 20px;
+}
+
+#footer {
+    margin-top: 10px;
+    padding-left: 10px;
+    border-top: solid 1px;
+    border-bottom: solid 1px;
+}
+
+#shipSize {
+    margin-left: 11px;
+}
+
+#containerDetails {
+    margin-top: 20px;
+    margin-left: 60px;
 }
