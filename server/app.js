@@ -374,7 +374,6 @@ app.post('/submit-crane-operation', (req, res) => {
 
         if (storageResults.length === 0) {
             // We're loading into storage
-
             let query;
             if (vehicleType === 'ship') {
                 // Query to get containers from a ship
