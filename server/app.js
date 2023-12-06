@@ -301,7 +301,7 @@ app.post('/submit-truck-driver-checkin', (req, res) => {
             }
 
             // Find the container ID on the truck
-            const incomingContainers = 'SELECT storageAreaAddress FROM containers WHERE sourceType="truck" AND sourceID=?';
+            const incomingContainers = 'SELECT storageAreaAddress FROM containers WHERE sourceType="truck" AND sourceID=? and status IS NULL';
             connection.query(incomingContainers, [truckId], (err, inContainers) => {
                 // log the error message and send a 500 status code with a message
                 if (err) {
@@ -312,7 +312,7 @@ app.post('/submit-truck-driver-checkin', (req, res) => {
                 // If no incoming containers are found
                 if (inContainers.length === 0) {
                     // Define a query to select container IDs from the containers table where the destination ID matches the truck ID
-                    const outgoingContainters = 'SELECT storageAreaAddress FROM containers WHERE destinationType="truck" AND destinationID=?';
+                    const outgoingContainters = 'SELECT storageAreaAddress FROM containers WHERE destinationType="truck" AND destinationID=? and status="storage"';
 
                     // Execute the query
                     connection.query(outgoingContainters, [truckId], (err, outContainers) => {
@@ -355,7 +355,8 @@ app.post('/submit-crane-operation', (req, res) => {
     const { vehicleType, vehicleId } = req.body;
 
     // Check the storage area to see if the container needs to be loaded or unleaded
-    const storageAreaQuery = 'SELECT * FROM storageArea WHERE containerID IS NOT NULL';
+    // const storageAreaQuery = 'SELECT * FROM storageArea WHERE containerID IS NOT NULL';
+    const containerSourceQuery = 'SELECT * FROM containers WHERE status IS NULL and sourceID = ? LIMIT 1';
 
 
     // if (vehicleType === 'ship') {
@@ -366,21 +367,21 @@ app.post('/submit-crane-operation', (req, res) => {
     //     query = 'SELECT * FROM containers WHERE sourceType = truck AND sourceID = ?';
     // }
 
-    connection.query(storageAreaQuery, (err, storageResults) => {
+    connection.query(containerSourceQuery, [vehicleId], (err, containerSourceResults) => {
         if (err) {
             console.error(err.message);
             return res.status(500).send('Server error occurred');
         }
 
-        if (storageResults.length === 0) {
+        if (containerSourceResults.length !== 0) {
             // We're loading into storage
             let query;
             if (vehicleType === 'ship') {
                 // Query to get containers from a ship
-                query = 'SELECT * FROM containers WHERE sourceType = "ship" AND sourceID = ?';
+                query = 'SELECT * FROM containers WHERE sourceType = "ship" AND sourceID = ? and status IS NULL';
             } else {
                 // Query to get containers from a truck
-                query = 'SELECT * FROM containers WHERE sourceType = "truck" AND sourceID = ?';
+                query = 'SELECT * FROM containers WHERE sourceType = "truck" AND sourceID = ? and status IS NULL';
             }
 
             // Execute query and update storage area and container
@@ -437,6 +438,12 @@ app.post('/submit-crane-operation', (req, res) => {
 
                 if (containerResults.length === 0) {
                     return res.status(404).send('No containers found');
+                }
+
+                const { status } = containerResults[0];
+
+                if (status === 'loaded') {
+                    return res.status(404).send('Container already loaded to destination');
                 }
 
                 const containerID = containerResults[0].containerID;
