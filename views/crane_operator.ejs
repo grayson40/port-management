@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Crane Operations</title>
-    <!-- Add CSS and JavaScript links here -->
+    <link rel="stylesheet" href="../views/styles.css" />
 </head>
 <body>
     <h1>Crane Operation Form</h1>
@@ -22,6 +22,7 @@
     </form>
 
     <div id="operationResult"></div>
+    <%- include('./partials/footer.ejs') %>
 
     <script>
         function submitCraneOperation() {

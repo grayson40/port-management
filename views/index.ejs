@@ -2,22 +2,44 @@
 <html>
 <head>
     <title>Port Management System</title>
-    <!-- You can add CSS and JavaScript links here -->
+    <link rel="stylesheet" href="../views/styles.css" />
+    <style>
+        body {
+            background-color: #1a5ec3f7;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Port Management System</h1>
-    <nav>
-        <ul>
-            <li><a href="/ship_registration">Ship Registration</a></li>
-            <li><a href="/port_entry">Port Entry</a></li>
-            <li><a href="/port_exit">Port Exit</a></li>
-            <li><a href="/crane_operator">Crane Operations</a></li>
-            <li><a href="/truck_registration">Truck Registration</a></li>
-            <li><a href="/truck_driver_checkin">Truck Driver Check-In</a></li>
-            <li><a href="/container_company_registration">Container Company Registration</a></li>
-            <li><a href="/port_admin_management">Port Admin Management</a></li>
-        </ul>
+    <h1 id="welcome">Welcome to the Port Management System!</h1>
+    <div id="shipBarLeft"></div>
+    <div id="shipBarRight"></div>
+    <nav id="mainNav">
+        <div class="row">
+            <div class="col">
+                <a href="/ship_registration">Ship Registration</a>
+            </div>
+            <div class="col">
+                <a href="/port_entry">Port Entry</a>
+            </div>
+            <div class="col">
+                <a href="/port_exit">Port Exit</a>
+            </div>
+            <div class="col">
+                <a href="/crane_operator">Crane Operations</a>
+            </div>
+            <div class="col">
+                <a href="/truck_registration">Truck Registration</a>
+            </div>
+            <div class="col">
+                <a href="/truck_driver_checkin">Truck Driver Check-In</a>
+            </div>
+            <div class="col">
+                <a href="/container_company_registration">Container Company Registration</a>
+            </div>
+            <div class="col">
+                <a href="/port_admin_management">Port Admin Management</a>
+            </div>
+        </div>
     </nav>
-    <!-- Additional content such as a footer, contact information, etc., can be added here -->
 </body>
 </html>

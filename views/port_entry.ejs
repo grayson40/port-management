@@ -2,10 +2,11 @@
 <html>
 <head>
     <title>Port Entry</title>
-    <!-- You can add CSS and JavaScript links here -->
+    <link rel="stylesheet" href="../views/styles.css" />
 </head>
 <body>
     <h1>Port Entry Form</h1>
+    <%- include('./partials/nav.ejs') %>
     <form id="portEntryForm">
         <label for="shipId">Ship ID:</label>
         <input type="text" id="shipId" name="shipId" required><br><br>
@@ -16,6 +17,7 @@
     </form>
 
     <div id="message"></div>
+    <%- include('./partials/footer.ejs') %>
 
     <script>
         function submitPortEntry() {

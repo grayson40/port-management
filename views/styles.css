@@ -1,0 +1,65 @@
+body {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#welcome {
+    text-align: center;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    background-color: darkred;
+    color: yellow;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+#shipBarLeft {
+    height: 100vh;
+    width: 15vw;
+    background-image: url('./images/home_ship.png');
+    background-size: contain;
+    position: fixed;
+    top: 59px;
+    left: 0;
+    padding-top: 20px;
+}
+
+#shipBarRight {
+    height: 100vh;
+    width: 15vw;
+    background-image: url('./images/home_ship.png');
+    background-size: contain;
+    position: fixed;
+    top: 59px;
+    right: 0;
+    padding-top: 20px;
+}
+
+#mainNav {
+    text-align: center;
+    font-size: larger;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    list-style-type: none;
+    color: white;
+}
+#mainNav .col {
+    padding-bottom: 20px;
+}
+#mainNav a:visited {
+    color: white;
+}
+
+#homeButton {
+    display: inline-block;
+    position: relative;
+    top: 10px;
+    left: 10px;
+    height: 35px;
+    width: 35px;
+}
+
+h4 {
+    display: inline-block;
+}
