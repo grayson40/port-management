@@ -339,10 +339,10 @@ app.post('/submit-truck-driver-checkin', (req, res) => {
                 } else {
                     // Get the storage area address from the first container in the results
                     const address = inContainers[0].storageAreaAddress;
-    
+
                     // Create a directions message
                     const directions = `Proceed to storage area ${address} for unloading.`;
-    
+
                     // Send back the response with a success message and the directions
                     res.json({ message: 'Check-in successful', directions: directions });
                 }
@@ -357,7 +357,7 @@ app.post('/submit-crane-operation', (req, res) => {
     // Check the storage area to see if the container needs to be loaded or unleaded
     const storageAreaQuery = 'SELECT * FROM storageArea WHERE containerID IS NOT NULL';
 
-    
+
     // if (vehicleType === 'ship') {
     //     // Query to get containers from a ship
     //     query = 'SELECT * FROM containers WHERE sourceType = ship AND sourceID = ?';
@@ -375,32 +375,33 @@ app.post('/submit-crane-operation', (req, res) => {
         if (storageResults.length === 0) {
             // We're loading into storage
 
+            let query;
             if (vehicleType === 'ship') {
                 // Query to get containers from a ship
                 query = 'SELECT * FROM containers WHERE sourceType = "ship" AND sourceID = ?';
             } else {
                 // Query to get containers from a truck
                 query = 'SELECT * FROM containers WHERE sourceType = "truck" AND sourceID = ?';
-            }       
-            
+            }
+
             // Execute query and update storage area and container
             connection.query(query, [vehicleId], (err, containerResults) => {
-                if (err){
+                if (err) {
                     console.error(err.message);
                     return res.status(500).send('Server error occurred');
                 }
 
-                if (containerResults.length === 0){
+                if (containerResults.length === 0) {
                     return res.status(404).send('No containers found');
                 }
-                
+
                 const containerID = containerResults[0].containerID;
                 const storageAddress = containerResults[0].storageAreaAddress;
-        
+
                 const storageUpdateQuery = 'UPDATE storageArea SET containerID = ? WHERE storageAddress = ?';
 
-                connection.query(storageUpdateQuery, [containerID, storageAddress], (err, storageUpdateResult) =>{
-                    if (err){
+                connection.query(storageUpdateQuery, [containerID, storageAddress], (err, storageUpdateResult) => {
+                    if (err) {
                         console.error(err.message);
                         return res.status(500).send('Server error occurred');
                     }
@@ -408,17 +409,60 @@ app.post('/submit-crane-operation', (req, res) => {
 
                 const containerUpdateQuery = 'UPDATE containers SET status = "storage" WHERE containerID = ?'
 
-                connection.query(containerUpdateQuery, [containerID], (err, containerUpdateResult) =>{
-                    if (err){
+                connection.query(containerUpdateQuery, [containerID], (err, containerUpdateResult) => {
+                    if (err) {
                         console.error(err.message);
                         return res.status(500).send('Server error occurred');
                     }
-                }) 
+                })
                 const message = `Container ${containerID} loaded into storage area ${storageAddress}`;
                 res.json({ message: message });
             })
         } else {
-            res.json({ message: 'Containers fetched successfully',  });
+            // We're unloading from storage
+            let query;
+            if (vehicleType === 'ship') {
+                // Query to get containers from a ship
+                query = 'SELECT * FROM containers WHERE destinationType = "ship" AND destinationID = ?';
+            } else {
+                // Query to get containers from a truck
+                query = 'SELECT * FROM containers WHERE destinationType = "truck" AND destinationID = ?';
+            }
+
+            // Execute query and update storage area and container
+            connection.query(query, [vehicleId], (err, containerResults) => {
+                if (err) {
+                    console.error(err.message);
+                    return res.status(500).send('Server error occurred');
+                }
+
+                if (containerResults.length === 0) {
+                    return res.status(404).send('No containers found');
+                }
+
+                const containerID = containerResults[0].containerID;
+                const storageAddress = containerResults[0].storageAreaAddress;
+
+                const storageUpdateQuery = 'UPDATE storageArea SET containerID = NULL WHERE storageAddress = ?';
+
+                connection.query(storageUpdateQuery, [storageAddress], (err, storageUpdateResult) => {
+                    if (err) {
+                        console.error(err.message);
+                        return res.status(500).send('Server error occurred');
+                    }
+                })
+
+                const containerUpdateQuery = 'UPDATE containers SET status = "loaded" WHERE containerID = ?'
+
+                connection.query(containerUpdateQuery, [containerID], (err, containerUpdateResult) => {
+                    if (err) {
+                        console.error(err.message);
+                        return res.status(500).send('Server error occurred');
+                    }
+                })
+                const message = `Container ${containerID} unloaded from storage area ${storageAddress}`;
+                res.json({ message: message });
+            })
         }
     });
 });
